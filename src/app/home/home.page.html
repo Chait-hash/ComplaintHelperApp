@@ -35,7 +35,31 @@
       </ion-header>
       
       <ion-content class="ion-padding">
-        <h1>hello ji</h1>
+        <div class="container">
+          <div class="input-container">
+            <h2 class="prompt-text">What can I help with?</h2>
+            <div class="input-wrapper">
+              <ion-textarea 
+                #complaintInput
+                [(ngModel)]="complaintText"
+                (keyup.enter)="onEnterPressed()"
+                (ionInput)="onInputChange()"
+                placeholder="Enter Your Complaint"
+                rows="4"
+                class="complaint-input"
+                autoGrow="true">
+              </ion-textarea>
+              <ion-button 
+                (click)="submitComplaint()"
+                [disabled]="!isSubmitEnabled"
+                class="submit-button"
+                fill="solid"
+                shape="round">
+                <ion-icon name="arrow-forward" class="submit-icon"></ion-icon>
+              </ion-button>
+            </div>
+          </div>
+        </div>
       </ion-content>
     </ion-router-outlet>
   </ion-split-pane>

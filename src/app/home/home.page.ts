@@ -1,6 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { Router } from '@angular/router';
 import { MenuController } from '@ionic/angular';
+import { NgForm } from '@angular/forms';
 
 @Component({
   selector: 'app-home',
@@ -8,6 +9,11 @@ import { MenuController } from '@ionic/angular';
   styleUrls: ['./home.page.scss'],
 })
 export class HomePage implements OnInit {
+  @ViewChild('complaintInput') complaintInput!: ElementRef;
+  
+  complaintText: string = '';
+  isSubmitEnabled: boolean = false;
+  minLength: number = 10;
 
   constructor(
     private router: Router,
@@ -26,5 +32,25 @@ export class HomePage implements OnInit {
     this.router.navigate(['/login'], { 
       replaceUrl: true 
     });
+  }
+
+  onInputChange() {
+    this.isSubmitEnabled = this.complaintText.length >= this.minLength;
+  }
+
+  onEnterPressed() {
+    if (this.isSubmitEnabled) {
+      this.submitComplaint();
+    }
+  }
+
+  submitComplaint() {
+    if (this.isSubmitEnabled) {
+      console.log('Submitting complaint:', this.complaintText);
+      // Here you can add your API call or other logic to handle the complaint
+      // For now, we'll just clear the input
+      this.complaintText = '';
+      this.isSubmitEnabled = false;
+    }
   }
 }
