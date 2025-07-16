@@ -18,9 +18,9 @@ export class LoginPage {
   showPassword = false;
 
   constructor(
-    private router: Router, 
-    private fb: FormBuilder,
-    private loadingCtrl: LoadingController
+    private readonly router: Router, 
+    private readonly fb: FormBuilder,
+    private readonly loadingCtrl: LoadingController
   ) {
     this.initializeForm();
   }
