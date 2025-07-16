@@ -18,9 +18,9 @@ export class LoginPage {
   showPassword = false;
 
   constructor(
-    private readonly router: Router, 
-    private readonly fb: FormBuilder,
-    private readonly loadingCtrl: LoadingController
+    private router: Router, 
+    private fb: FormBuilder,
+    private loadingCtrl: LoadingController
   ) {
     this.initializeForm();
   }
@@ -109,7 +109,6 @@ export class LoginPage {
       // Handle successful login
       await this.handleEmailLoginSuccess(response.data, keycloakCredentials);
       console.log("Padh lo", response.data);
-      
     } catch (error) {
       console.error('Authentication error:', error);
       // Handle specific error cases here
