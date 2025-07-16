@@ -15,6 +15,7 @@ import { LoadingController } from "@ionic/angular";
 export class LoginPage {
   loginForm: FormGroup;
   loading = false;
+  
   showPassword = false;
 
   constructor(
