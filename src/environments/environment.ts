@@ -2,8 +2,12 @@
 // `ng build --prod` replaces `environment.ts` with `environment.prod.ts`.
 // The list of file replacements can be found in `angular.json`.
 
+
 export const environment = {
-  production: false
+  production: false,
+  clientId: "ComplaintApp",
+  clientSecretStaging: "H3RcUHUCQkzPrilWCVIQpi4BUr1E7AUG",
+  keycloakUrlStaging: "http://localhost:8080/realms/ionic-project/protocol/openid-connect/token",
 };
 
 /*

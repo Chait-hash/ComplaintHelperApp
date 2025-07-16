@@ -1,0 +1,42 @@
+<ion-app>
+  <ion-split-pane contentId="main-content">
+    <!-- Menu -->
+    <ion-menu contentId="main-content" type="overlay">
+      <ion-header>
+        <ion-toolbar color="primary">
+          <ion-title>Menu</ion-title>
+        </ion-toolbar>
+      </ion-header>
+      <ion-content>
+        <ion-list>
+          <ion-menu-toggle auto-hide="false">
+            <ion-item button routerLink="/home" routerDirection="root" lines="none" detail="false">
+              <ion-icon name="home" slot="start"></ion-icon>
+              <ion-label>Home</ion-label>
+            </ion-item>
+            <ion-item button routerLink="/login" routerDirection="root" lines="none" detail="false" (click)="logout()">
+              <ion-icon name="log-out" slot="start"></ion-icon>
+              <ion-label>Logout</ion-label>
+            </ion-item>
+          </ion-menu-toggle>
+        </ion-list>
+      </ion-content>
+    </ion-menu>
+
+    <!-- Main Content -->
+    <ion-router-outlet id="main-content">
+      <ion-header>
+        <ion-toolbar color="primary">
+          <ion-buttons slot="start">
+            <ion-menu-button></ion-menu-button>
+          </ion-buttons>
+          <ion-title>Home</ion-title>
+        </ion-toolbar>
+      </ion-header>
+      
+      <ion-content class="ion-padding">
+        <h1>hello ji</h1>
+      </ion-content>
+    </ion-router-outlet>
+  </ion-split-pane>
+</ion-app>
