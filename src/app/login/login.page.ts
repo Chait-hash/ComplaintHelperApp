@@ -15,6 +15,7 @@ import { LoadingController } from "@ionic/angular";
 export class LoginPage {
   loginForm: FormGroup;
   loading = false;
+  showPassword = false;
 
   constructor(
     private router: Router, 
@@ -141,6 +142,10 @@ export class LoginPage {
       console.error('Error handling login success:', error);
       throw error;
     }
+  }
+
+  togglePassword() {
+    this.showPassword = !this.showPassword;
   }
 
   private toFormUrlEncoded(obj: any): string {

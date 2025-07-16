@@ -17,6 +17,25 @@
       color: #000000; /* Ensure input text is black */
     }
   }
+
+  /* Password toggle button */
+  .password-toggle {
+    --padding-start: 8px;
+    --padding-end: 8px;
+    --color: #666666;
+    --background: transparent;
+    --box-shadow: none;
+    margin: 0;
+    height: 40px;
+    
+    &:hover, &:focus {
+      --color: var(--ion-color-primary);
+    }
+    
+    ion-icon {
+      font-size: 1.5em;
+    }
+  }
   
   ion-button {
     --background: #3880ff;
