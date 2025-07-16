@@ -1,0 +1,90 @@
+<ion-header>
+  <ion-toolbar color="dark">
+    <ion-title>Login</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding" color="dark">
+  <div class="login-container">
+    <div class="logo-container">
+      <!-- Add your logo here -->
+      <ion-icon name="shield-checkmark" class="logo"></ion-icon>
+      <h2>Welcome Back</h2>
+      <p>Please sign in to continue</p>
+    </div>
+
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
+      <!-- Email Input -->
+      <ion-item color="dark" lines="full" class="form-item">
+        <ion-label position="floating">Email</ion-label>
+        <ion-input 
+          type="email" 
+          formControlName="userEmail"
+          autocomplete="username"
+          placeholder="Enter your email">
+        </ion-input>
+        <ion-icon name="mail-outline" slot="start"></ion-icon>
+      </ion-item>
+      <ion-note *ngIf="loginForm.get('userEmail')?.touched && loginForm.get('userEmail')?.errors?.['required']" 
+                color="danger" class="error-message">
+        Email is required
+      </ion-note>
+      <ion-note *ngIf="loginForm.get('userEmail')?.touched && loginForm.get('userEmail')?.errors?.['email']" 
+                color="danger" class="error-message">
+        Please enter a valid email
+      </ion-note>
+
+      <!-- Password Input -->
+      <ion-item color="dark" lines="full" class="form-item">
+        <ion-label position="floating">Password</ion-label>
+        <ion-input 
+          [type]="showPassword ? 'text' : 'password'" 
+          formControlName="userPassword"
+          autocomplete="current-password"
+          placeholder="Enter your password">
+        </ion-input>
+        <ion-icon name="lock-closed-outline" slot="start"></ion-icon>
+        <ion-button 
+          fill="clear" 
+          slot="end" 
+          (click)="togglePassword()" 
+          class="password-toggle"
+          type="button">
+          <ion-icon [name]="showPassword ? 'eye-off-outline' : 'eye-outline'"></ion-icon>
+        </ion-button>
+      </ion-item>
+      <ion-note *ngIf="loginForm.get('userPassword')?.touched && loginForm.get('userPassword')?.errors?.['required']" 
+                color="danger" class="error-message">
+        Password is required
+      </ion-note>
+      <ion-note *ngIf="loginForm.get('userPassword')?.touched && loginForm.get('userPassword')?.errors?.['pattern']" 
+                color="danger" class="error-message">
+        Password must include uppercase, lowercase, number, and special character
+      </ion-note>
+
+      <!-- Forgot Password Link -->
+      <!-- <div class="forgot-password">
+        <ion-button fill="clear" size="small" (click)="onForgotPassword()">
+          Forgot Password?
+        </ion-button>
+      </div> -->
+
+      <!-- Submit Button -->
+      <ion-button 
+        expand="block" 
+        type="submit" 
+        color="primary" 
+        class="login-button"
+        [disabled]="!loginForm.valid">
+        <ion-spinner *ngIf="loading" name="crescent"></ion-spinner>
+        <span *ngIf="!loading">Login</span>
+      </ion-button>
+
+      <!-- Sign Up Link -->
+      <!-- <div class="signup-link">
+        Don't have an account? 
+        <a (click)="onSignUp()">Sign up</a>
+      </div> -->
+    </form>
+  </div>
+</ion-content>

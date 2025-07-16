@@ -1,0 +1,145 @@
+<ion-header class="safe--area ion-no-border"> </ion-header>
+<ion-content [fullscreen]="true">
+  <form [formGroup]="loginForm!" (ngSubmit)="onSubmit()">
+    <div class="ParetDiv">
+      <h4 class="welcomeText">Welcome back!</h4>
+      <h6>Enter your email and get access to everything you have bundled.</h6>
+
+      <ion-list class="LoginRadio">
+        <ion-radio-group
+          formControlName="contactMethod"
+          (ionChange)="onOptionChange()"
+        >
+          <ion-item lines="none">
+            <ion-label>Email</ion-label>
+            <ion-radio slot="start" value="email"></ion-radio>
+          </ion-item>
+          <ion-item lines="none">
+            <ion-label>Phone</ion-label>
+            <ion-radio slot="start" value="phone"></ion-radio>
+          </ion-item>
+        </ion-radio-group>
+      </ion-list>
+
+      <ng-container *ngIf="selectedOption === 'email'">
+        <div
+          class="userEmailItem"
+          [class.invalid]="isInvalid('userEmail')"
+          [class.valid]="isValid('userEmail')"
+        >
+          <ion-input
+            appAutofill
+            type="email"
+            [placeholder]="'Email'"
+            formControlName="userEmail"
+            name="email"
+            autocomplete="email"
+            inputmode="email"
+          ></ion-input>
+        </div>
+        <div
+          class="userPasswordItem"
+          [class.invalid]="isInvalid('userPassword')"
+          [class.valid]="isValid('userPassword')"
+        >
+          <ion-input
+            appAutofill
+            [type]="isPasswordVisible ? 'text' : 'password'"
+            [placeholder]="'Password'"
+            formControlName="userPassword"
+            (ionChange)="onPasswordChange()"
+            name="password"
+            [attr.autocomplete]="'current-password'"
+          >
+            <ion-button
+              fill="clear"
+              slot="end"
+              aria-label="Show/hide"
+              (click)="togglePasswordVisibility()"
+            >
+              <img
+                *ngIf="isPasswordVisible"
+                src="../../../../assets/Images/fi-sr-eye 1.svg"
+                slot="start"
+                alt="Hide"
+                width="20"
+                height="20"
+              />
+              <img
+                *ngIf="!isPasswordVisible"
+                src="../../../../assets/Images/fi-sr-eye 1.svg"
+                slot="start"
+                alt="Show"
+                width="20"
+                height="20"
+              />
+            </ion-button>
+          </ion-input>
+        </div>
+      </ng-container>
+
+      <ng-container *ngIf="selectedOption === 'phone'">
+        <div class="phoneMainDiv">
+          <app-country-dropdown
+            (countrySelected)="onCountrySelected($event)"
+          ></app-country-dropdown>
+          <div
+            class="userNumberItem"
+            [class.invalid]="isInvalid('userNumber')"
+            [class.valid]="isValid('userNumber')"
+          >
+            <ion-input
+              type="text"
+              [placeholder]="'Your number'"
+              formControlName="userNumber"
+            ></ion-input>
+          </div>
+        </div>
+      </ng-container>
+
+      <p class="forgetPassword" *ngIf="selectedOption === 'email'">
+        <span (click)="goToForgotPasswordPage()" class="forgotPasswordLink"
+          >Forgot your password?</span
+        >
+      </p>
+
+      <ion-button
+        class="login-button"
+        type="submit"
+        [disabled]="loginForm.invalid || isModalOpening"
+        expand="block"
+      >
+        Log in
+      </ion-button>
+
+      <div class="orDiv">
+        <p class="orLabel">
+          <span> or </span>
+        </p>
+        <p class="orLine"></p>
+      </div>
+      <ion-grid class="social-btns">
+        <app-button-social
+          label="Log In with Google"
+          class="btns"
+          [src]="'flat-color-icons_google.svg'"
+          (clickEvent)="handleSocialLogin('google')"
+          accessibilityLabel="google-login"
+        ></app-button-social>
+
+        <app-button-social
+          label="Log In with Apple"
+          class="btns"
+          [src]="'common-icons/apple-logo.svg'"
+          *ngIf="isIOS"
+          (clickEvent)="handleSocialLogin('apple')"
+        ></app-button-social>
+      </ion-grid>
+
+      <p class="haveAccountLabel">
+        Don't have an account?
+        <span (click)="goToRegisterPage()" class="registerLink">Register</span>
+      </p>
+    </div>
+  </form>
+</ion-content>
