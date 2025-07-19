@@ -13,11 +13,17 @@ export class TokenService {
   constructor(private readonly storageService: StorageService) { }
 
   async setToken(token: string): Promise<void> {
+    console.log('[TokenService] Setting token in storage');
     await this.storageService.setItem(this.TOKEN_KEY, token);
+    // Verify token was stored
+    const storedToken = await this.storageService.getItem<string>(this.TOKEN_KEY);
+    console.log('[TokenService] Token stored successfully:', storedToken ? 'Token exists' : 'Token is null/undefined');
   }
 
   async getToken(): Promise<string | null> {
-    return await this.storageService.getItem<string>(this.TOKEN_KEY);
+    const token = await this.storageService.getItem<string>(this.TOKEN_KEY);
+    console.log('[TokenService] Retrieved token from storage:', token ? 'Token exists' : 'Token is null/undefined');
+    return token;
   }
 
   async getUserID(): Promise<string | null> {

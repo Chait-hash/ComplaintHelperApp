@@ -3,11 +3,19 @@
 // The list of file replacements can be found in `angular.json`.
 
 
+
+
 export const environment = {
   production: false,
   clientId: "complaint-helper-client",
-  clientSecretStaging: "WzXDbXwm1GeiQmJOFBsvr6FmbyceUOgN",
+  clientSecretStaging: "8nAxlYiTZf88xNL8rFqXj0TSuDiWNyeV",
   keycloakUrlStaging: "http://localhost:8080/realms/complaint-helper/protocol/openid-connect/token",
+  acceptRejectUrl : "http://localhost:3000/api/complaints/paraphrase/respond",
+  generateComplaintURL : "http://localhost:3000/api/complaints",
+  generateParaphraseWithComplaintId : "http://localhost:3000/api/complaints/paraphrase",
+  editComplaintURL : "http://localhost:3000/api/complaints",
+
+  publicUrls : "",
 };
 
 /*

@@ -18,6 +18,7 @@ import { Drivers } from '@ionic/storage';
 import { NgOtpInputModule } from 'ng-otp-input';
 
 import { SharedModule } from './shared/shared.module';
+import { SHInterceptor } from './shared/interceptors/sh.interceptor';
 export function createTranslateLoader(http: HttpClient) {
   return new TranslateHttpLoader(http, './assets/i18n/', '.json');
 }
@@ -46,11 +47,11 @@ export function createTranslateLoader(http: HttpClient) {
   providers: [
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
     SharedModule,
-    // {
-    //   provide: HTTP_INTERCEPTORS,
-    //   useClass: SHInterceptor,
-    //   multi: true,
-    // }
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: SHInterceptor,
+      multi: true,
+    }
   ],
   bootstrap: [AppComponent],
 })

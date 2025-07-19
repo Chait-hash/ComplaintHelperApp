@@ -6,6 +6,10 @@ import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { LoadingController } from "@ionic/angular";
 import { LoginService } from "../shared/services/login.service";
 import { environment } from "../../environments/environment";
+import { ToastService } from "../shared/services/toast.service";
+import { StorageService } from "../shared/services/storage.service";
+import { TokenService } from "../shared/services/token.service";
+import { UserService } from '../shared/services/user.service';
 
 @Component({
   selector: "app-login",
@@ -19,16 +23,20 @@ export class LoginPage {
   showPassword = false;
 
   constructor(
-    private readonly router: Router, 
-    private readonly fb: FormBuilder,
-    private readonly loadingCtrl: LoadingController,
-    private readonly loginService : LoginService,
+    private router: Router,
+    private formBuilder: FormBuilder,
+    private loadingController: LoadingController,
+    private loginService: LoginService,
+    private toastService: ToastService,
+    private storageService: StorageService,
+    private tokenService: TokenService,
+    private userService : UserService
   ) {
     this.initializeForm();
   }
 
   private initializeForm() {
-    this.loginForm = this.fb.group({
+    this.loginForm = this.formBuilder.group({
       userEmail: ["", [Validators.required, Validators.email]],
       userPassword: [
         "",
@@ -39,7 +47,7 @@ export class LoginPage {
           ),
           Validators.minLength(8),
         ],
-      ]
+      ],
     });
   }
 
@@ -50,11 +58,11 @@ export class LoginPage {
     }
 
     this.loading = true;
-    const loading = await this.loadingCtrl.create({
-      message: 'Signing in...',
-      spinner: 'crescent'
+    const loading = await this.loadingController.create({
+      message: "Signing in...",
+      spinner: "crescent",
     });
-    
+
     try {
       await loading.present();
       await this.handleEmailLogin();
@@ -68,9 +76,8 @@ export class LoginPage {
     }
   }
 
-
   private markFormGroupTouched(formGroup: FormGroup) {
-    Object.values(formGroup.controls).forEach(control => {
+    Object.values(formGroup.controls).forEach((control) => {
       control.markAsTouched();
       if (control instanceof FormGroup) {
         this.markFormGroupTouched(control);
@@ -103,35 +110,73 @@ export class LoginPage {
       await this.handleEmailLoginSuccess(response.data, keycloakCredentials);
       console.log("Padh lo", response.data);
     } catch (error) {
-      console.error('Authentication error:', error);
+      console.error("Authentication error:", error);
       // Handle specific error cases here
       throw error;
     }
   }
 
   private async handleEmailLoginSuccess(data: any, keycloakCredentials: {}) {
+    const loading = await this.loadingController.create({
+      message: 'Completing login...',
+      spinner: 'crescent'
+    });
+    
     try {
-      const token = data.access_token;
-      // Store the token in your preferred storage (e.g., Ionic Storage)
-      // await this.storageService.set('auth_token', token);
+      await loading.present();
       
-      // Decode the token to get user information
-      const decodedToken = jwtDecode<{ sub: string; email: string; name?: string }>(token);
+      console.log('Login successful, storing token...');
+      this.toastService.presentToast("Authentication successful", 2000, "success");
+      
+      // Store the token and wait for it to complete
+      const token = data.access_token;
+      console.log('Token received:', token ? 'Token exists' : 'Token is empty');
+      
+      if (!token) {
+        throw new Error('No access token received');
+      }
+      
+      // Store token and session state
+      await Promise.all([
+        this.storageService.setItem("session_state", data.session_state),
+        this.tokenService.setToken(token)
+      ]);
+      
+      console.log('Token stored in storage');
+      
+      // Decode token to get user info
+      const decodedToken = jwtDecode<{ 
+        sub: string; 
+        email?: string; 
+        given_name?: string; 
+        family_name?: string 
+      }>(token);
+
+      if (!decodedToken.sub) {
+        throw new Error('Invalid token: missing sub claim');
+      }
+      
+      // Store user ID
+      await this.tokenService.setDecodedTokenToStorage(decodedToken.sub);
+      
+      // Update login state
+      await this.storageService.removeItem("user_has_logged_out");
       
       // Prepare navigation extras with user data
       const navigationExtras: NavigationExtras = {
         state: {
-          email: decodedToken.email || this.loginForm.value.userEmail,
-          name: decodedToken.name || '',
+          email: this.loginForm.value.userEmail,
+          phoneNumber: '',
           token: token,
-          flag: "email-login",
+          flag: 'email-login',
         },
       };
 
-      // Navigate to the main app area
-      this.router.navigate(['/home'], navigationExtras);
+      console.log('Navigation to home starting...');
+      await this.router.navigate(["/home"], navigationExtras);
+      console.log('Navigation to home completed');
     } catch (error) {
-      console.error('Error handling login success:', error);
+      console.error("Error handling login success:", error);
       throw error;
     }
   }

@@ -34,29 +34,62 @@
         </ion-toolbar>
       </ion-header>
       
-      <ion-content class="ion-padding">
+      <ion-content [fullscreen]="true" class="ion-padding">
         <div class="container">
           <div class="input-container">
-            <h2 class="prompt-text">What can I help with?</h2>
+            <h1 class="prompt-text">What's your complaint?</h1>
+            
             <div class="input-wrapper">
-              <ion-textarea 
-                #complaintInput
-                [(ngModel)]="complaintText"
-                (keyup.enter)="onEnterPressed()"
-                (ionInput)="onInputChange()"
-                placeholder="Enter Your Complaint"
-                rows="4"
-                class="complaint-input"
-                autoGrow="true">
-              </ion-textarea>
+              <div class="textarea-container">
+                <ion-textarea 
+                  #complaintInput
+                  [(ngModel)]="complaintText"
+                  (ionInput)="onInputChange()"
+                  [autoGrow]="true"
+                  placeholder="Type your complaint here..."
+                  class="complaint-input"
+                  rows="4"
+                  [readonly]="isSubmitted"
+                  (ionFocus)="onTextareaFocus()"
+                  (ionBlur)="onTextareaBlur()"
+                ></ion-textarea>
+                <div class="character-counter">{{ complaintText.length }}</div>
+              </div>
+              
+              <!-- Submit Button (shown by default) -->
               <ion-button 
-                (click)="submitComplaint()"
-                [disabled]="!isSubmitEnabled"
+                *ngIf="!isSubmitted"
+                (click)="submitComplaint()" 
+                [disabled]="!isSubmitEnabled" 
+                fill="clear"
                 class="submit-button"
-                fill="solid"
-                shape="round">
-                <ion-icon name="arrow-forward" class="submit-icon"></ion-icon>
+                [class.disabled]="!isSubmitEnabled">
+                <ion-icon name="arrow-forward"></ion-icon>
               </ion-button>
+              
+              <!-- Action Buttons (shown after submission) -->
+              <div *ngIf="isSubmitted" class="action-buttons">
+                <ion-button 
+                  (click)="onAccept()" 
+                  fill="solid"
+                  class="accept-button">
+                  <ion-icon name="checkmark-circle"></ion-icon>
+                  <span>Accept</span>
+                </ion-button>
+                <ion-button 
+                  (click)="onContinueEditing()" 
+                  fill="solid"
+                  class="continue-button">
+                  <ion-icon name="close-circle"></ion-icon>
+                  <span>Continue</span>
+                </ion-button>
+              </div>
+            </div>
+            
+            <!-- Submission status -->
+            <div *ngIf="isPulsing" class="submission-status">
+              <ion-spinner name="crescent"></ion-spinner>
+              <span>Processing your complaint...</span>
             </div>
           </div>
         </div>
