@@ -5,9 +5,9 @@
 
 export const environment = {
   production: false,
-  clientId: "ComplaintApp",
-  clientSecretStaging: "H3RcUHUCQkzPrilWCVIQpi4BUr1E7AUG",
-  keycloakUrlStaging: "http://localhost:8080/realms/ionic-project/protocol/openid-connect/token",
+  clientId: "complaint-helper-client",
+  clientSecretStaging: "WzXDbXwm1GeiQmJOFBsvr6FmbyceUOgN",
+  keycloakUrlStaging: "http://localhost:8080/realms/complaint-helper/protocol/openid-connect/token",
 };
 
 /*

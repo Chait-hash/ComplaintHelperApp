@@ -2,6 +2,8 @@ import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { Router } from '@angular/router';
 import { MenuController } from '@ionic/angular';
 import { NgForm } from '@angular/forms';
+import { LogoutService } from '../shared/services/logout.service';
+import { HomeService } from '../shared/services/home.service';
 
 @Component({
   selector: 'app-home',
@@ -16,8 +18,10 @@ export class HomePage implements OnInit {
   minLength: number = 10;
 
   constructor(
-    private router: Router,
-    private menu: MenuController
+    private readonly router: Router,
+    private readonly menu: MenuController,
+    private readonly logoutService : LogoutService,
+    private readonly homeService : HomeService
   ) { }
 
   ngOnInit() {
@@ -25,13 +29,7 @@ export class HomePage implements OnInit {
   }
 
   async logout() {
-    // Clear any stored authentication data
-    // await this.storage.remove('auth_token');
-    
-    // Navigate to login page and clear navigation history
-    this.router.navigate(['/login'], { 
-      replaceUrl: true 
-    });
+    await this.logoutService.logout();
   }
 
   onInputChange() {
@@ -47,8 +45,6 @@ export class HomePage implements OnInit {
   submitComplaint() {
     if (this.isSubmitEnabled) {
       console.log('Submitting complaint:', this.complaintText);
-      // Here you can add your API call or other logic to handle the complaint
-      // For now, we'll just clear the input
       this.complaintText = '';
       this.isSubmitEnabled = false;
     }

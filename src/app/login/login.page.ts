@@ -1,10 +1,11 @@
 import { Component } from "@angular/core";
 import { NavigationExtras, Router } from "@angular/router";
-import { environment } from "src/environments/environment";
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { LoadingController } from "@ionic/angular";
+import { LoginService } from "../shared/services/login.service";
+import { environment } from "../../environments/environment";
 
 @Component({
   selector: "app-login",
@@ -13,14 +14,15 @@ import { LoadingController } from "@ionic/angular";
   styleUrls: ["./login.page.scss"],
 })
 export class LoginPage {
-  loginForm: FormGroup;
+  loginForm!: FormGroup;
   loading = false;
   showPassword = false;
 
   constructor(
-    private router: Router, 
-    private fb: FormBuilder,
-    private loadingCtrl: LoadingController
+    private readonly router: Router, 
+    private readonly fb: FormBuilder,
+    private readonly loadingCtrl: LoadingController,
+    private readonly loginService : LoginService,
   ) {
     this.initializeForm();
   }
@@ -66,15 +68,6 @@ export class LoginPage {
     }
   }
 
-  async onForgotPassword() {
-    // Navigate to forgot password page
-    this.router.navigate(['/forgot-password']);
-  }
-
-  onSignUp() {
-    // Navigate to signup page
-    this.router.navigate(['/signup']);
-  }
 
   private markFormGroupTouched(formGroup: FormGroup) {
     Object.values(formGroup.controls).forEach(control => {

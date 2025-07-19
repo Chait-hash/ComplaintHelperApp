@@ -1,5 +1,4 @@
 import { Component } from '@angular/core';
-import { SplashScreen } from '@capacitor/splash-screen'
 @Component({
   selector: 'app-root',
   templateUrl: 'app.component.html',
@@ -17,6 +16,5 @@ export class AppComponent {
 
         https://capacitor.ionicframework.com/docs/apis/splash-screen#hiding-the-splash-screen
     */
-    SplashScreen.hide();
   }
 }
