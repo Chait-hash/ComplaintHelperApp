@@ -37,12 +37,24 @@
           <!-- Chat messages -->
           <div class="chat-messages">
             <ng-container *ngFor="let message of messages">
-              <div class="message" [class.user]="message.isUser" [class.assistant]="!message.isUser">
-                <div class="message-content">
-                  {{ message.text }}
-                </div>
+            <div class="message" [class.user]="message.isUser" [class.assistant]="!message.isUser">
+              <div class="message-content">
+                {{ message.text }}
               </div>
-            </ng-container>
+              <!-- Action buttons for paraphrased messages -->
+              <div *ngIf="!message.isUser && message.isParaphrase" class="action-buttons">
+                <button class="action-button" (click)="copyToClipboard(message.text)" title="Copy to clipboard">
+                  <ion-icon name="copy-outline"></ion-icon>
+                </button>
+                <button class="action-button" (click)="onAcceptResponse(message.id)" title="Accept">
+                  <ion-icon name="checkmark-outline"></ion-icon>
+                </button>
+                <button class="action-button" (click)="onRejectResponse(message.id)" title="Reject">
+                  <ion-icon name="close-outline"></ion-icon>
+                </button>
+              </div>
+            </div>
+          </ng-container>
             
             <!-- Loading indicator -->
             <div *ngIf="isPulsing" class="message assistant">

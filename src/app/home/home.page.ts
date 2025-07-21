@@ -5,9 +5,11 @@ import { HomeService } from '../shared/services/home.service';
 import { LogoutService } from '../shared/services/logout.service';
 
 interface ChatMessage {
+  id: string;
   text: string;
   isUser: boolean;
   timestamp: Date;
+  isParaphrase?: boolean;
 }
 
 @Component({
@@ -140,13 +142,13 @@ export class HomePage implements OnInit, AfterViewChecked {
     this.homeService.generateParaphraseWithComplaintId(this.currentComplaintId).subscribe({
       next: (response) => {
         console.log('Paraphrase generated successfully:', response);
-        // Add the paraphrased response to chat
+        // Add the paraphrased response to chat with isParaphrase flag
         if (response.paraphrasedText) {
-          this.addMessage(response.paraphrasedText, false);
+          this.addMessage(response.paraphrasedText, false, true);
         } else if (response.complaint?.originalText) {
-          this.addMessage(response.complaint.originalText, false);
+          this.addMessage(response.complaint.originalText, false, true);
         } else {
-          this.addMessage('Here\'s a refined version of your complaint:\n\n' + this.currentComplaint, false);
+          this.addMessage('Here\'s a refined version of your complaint:\n\n' + this.currentComplaint, false, true);
         }
         this.shouldScrollToBottom = true;
         
@@ -176,13 +178,34 @@ export class HomePage implements OnInit, AfterViewChecked {
     }, 100);
   }
   
-  private addMessage(text: string, isUser: boolean) {
+  private addMessage(text: string, isUser: boolean, isParaphrase: boolean = false) {
     this.messages.push({
+      id: Date.now().toString(),
       text: text.trim(),
       isUser,
-      timestamp: new Date()
+      timestamp: new Date(),
+      isParaphrase
     });
     this.shouldScrollToBottom = true;
+  }
+
+  copyToClipboard(text: string) {
+    navigator.clipboard.writeText(text).then(() => {
+      // Optional: Show a toast or notification that text was copied
+      console.log('Text copied to clipboard');
+    }).catch(err => {
+      console.error('Failed to copy text: ', err);
+    });
+  }
+
+  onAcceptResponse(messageId: string) {
+    console.log('accepted', messageId);
+    // You can update the message state here if needed
+  }
+
+  onRejectResponse(messageId: string) {
+    console.log('rejected', messageId);
+    // You can update the message state here if needed
   }
 
   private resetForm() {
