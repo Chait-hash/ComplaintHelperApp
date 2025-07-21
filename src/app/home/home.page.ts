@@ -132,6 +132,7 @@ export class HomePage implements OnInit, AfterViewChecked {
     this.complaintText = '';
     this.isSubmitEnabled = false;
     this.isPulsing = true;
+    this.isSubmitted = false; // Reset to show green button again
     
     console.log('Generating paraphrase for complaint ID:', this.currentComplaintId);
     
