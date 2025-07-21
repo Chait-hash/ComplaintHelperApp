@@ -77,23 +77,21 @@ export class HomePage implements OnInit, AfterViewChecked {
   submitComplaint() {
     if (this.complaintText.trim() === '') return;
 
-    // Add user message to chat
-    this.addMessage(this.complaintText, true);
+    // Store the complaint text but don't add to chat yet
     this.currentComplaint = this.complaintText;
-    this.shouldScrollToBottom = true;
+    this.isPulsing = true;
 
     // If there's already a complaint ID, update the existing complaint (edit mode)
     if (this.currentComplaintId) {
-      this.isPulsing = true;
       this.homeService.editComplaint(this.complaintText, this.currentComplaintId).subscribe({
         next: (response) => {
           console.log('Complaint updated successfully:', response);
-          this.isSubmitted = true;
-          this.shouldScrollToBottom = true;
+          this.isSubmitted = true; // Show accept/reject buttons
         },
         error: (error) => {
           console.error('Error updating complaint:', error);
-          this.addMessage('Sorry, there was an error processing your request. Please try again.', false);
+          this.addMessage('Sorry, there was an error updating your complaint. Please try again.', false);
+          this.resetForm();
         },
         complete: () => {
           this.isPulsing = false;
@@ -102,39 +100,17 @@ export class HomePage implements OnInit, AfterViewChecked {
       return;
     }
 
-    // Set loading state
-    this.isPulsing = true;
-    const isInitial = this.isInitialComplaint;
-    
-    // If this is the initial complaint, show the loading message
-    if (isInitial) {
-      this.addMessage('Generating your complaint...', false);
-      this.shouldScrollToBottom = true;
-    }
-
+    // For new complaints, create a new one
     this.homeService.submitComplaint(this.complaintText, "email").subscribe({
       next: (response) => {
-        console.log('Complaint submitted successfully:', response);
-        this.isSubmitted = true;
+        console.log('Complaint created successfully:', response);
         this.currentComplaintId = response.service.complaintId;
-        this.shouldScrollToBottom = true;
-        
-        // Remove the loading message and add the actual response
-        if (isInitial) {
-          this.messages = this.messages.filter(m => m.text !== 'Generating your complaint...');
-          this.addMessage(response.service.complaint, false);
-          this.isInitialComplaint = false; // Mark as not initial anymore
-        } else {
-          this.addMessage(response.service.complaint, false);
-        }
+        this.isSubmitted = true; // Show accept/reject buttons
       },
       error: (error) => {
-        console.error('Error submitting complaint:', error);
-        // Remove the loading message if it exists
-        if (isInitial) {
-          this.messages = this.messages.filter(m => m.text !== 'Generating your complaint...');
-        }
-        this.addMessage('Sorry, there was an error submitting your complaint. Please try again.', false);
+        console.error('Error creating complaint:', error);
+        this.addMessage('Sorry, there was an error creating your complaint. Please try again.', false);
+        this.resetForm();
       },
       complete: () => {
         this.isPulsing = false;
@@ -143,30 +119,43 @@ export class HomePage implements OnInit, AfterViewChecked {
   }
   
   onAccept() {
-    if (!this.currentComplaintId) {
-      console.error('No complaint ID available');
+    if (!this.currentComplaintId || !this.currentComplaint) {
+      console.error('No complaint ID or text available');
       return;
     }
-
-    console.log('Generating paraphrase for complaint ID:', this.currentComplaintId);
+    
+    // Add user's message to chat
+    this.addMessage(this.currentComplaint, true);
+    this.shouldScrollToBottom = true;
+    
+    // Clear the textbox and hide submit button
+    this.complaintText = '';
+    this.isSubmitEnabled = false;
     this.isPulsing = true;
     
+    console.log('Generating paraphrase for complaint ID:', this.currentComplaintId);
+    
+    // Generate the paraphrase for the accepted complaint
     this.homeService.generateParaphraseWithComplaintId(this.currentComplaintId).subscribe({
       next: (response) => {
         console.log('Paraphrase generated successfully:', response);
-        // Add the paraphrased response to the chat
+        // Add the paraphrased response to chat
         if (response.paraphrasedText) {
           this.addMessage(response.paraphrasedText, false);
+        } else if (response.complaint?.originalText) {
+          this.addMessage(response.complaint.originalText, false);
         } else {
           this.addMessage('Here\'s a refined version of your complaint:\n\n' + this.currentComplaint, false);
         }
         this.shouldScrollToBottom = true;
+        
+        // Reset for next complaint
         this.resetForm();
       },
       error: (error) => {
         console.error('Error generating paraphrase:', error);
-        this.addMessage('Sorry, there was an error generating a paraphrase. Please try again.', false);
-        this.shouldScrollToBottom = true;
+        this.addMessage('Sorry, there was an error generating the paraphrase. Please try again.', false);
+        this.resetForm();
       },
       complete: () => {
         this.isPulsing = false;
@@ -175,40 +164,15 @@ export class HomePage implements OnInit, AfterViewChecked {
   }
   
   onContinueEditing() {
-    if (!this.currentComplaintId) {
-      console.error('No complaint ID available');
-      return;
-    }
-
-    console.log('Editing complaint with ID:', this.currentComplaintId);
-    this.homeService.editComplaint(this.complaintText, this.currentComplaintId).subscribe({
-      next: (response) => {
-        console.log('Complaint updated successfully:', response);
-        // Switch back to edit mode, keep the same complaint ID
-        this.isSubmitted = false;
-        this.isSubmitEnabled = true;
-        
-        // Update the last user message with the edited text
-        if (this.messages.length > 0) {
-          const lastUserMessageIndex = this.messages.slice().reverse().findIndex(msg => msg.isUser);
-          const adjustedIndex = lastUserMessageIndex === -1 ? -1 : this.messages.length - 1 - lastUserMessageIndex;
-          if (adjustedIndex !== -1) {
-            this.messages[adjustedIndex].text = this.complaintText;
-          }
-        }
-        
-        // Focus the input field after a short delay
-        setTimeout(() => {
-          if (this.complaintInput) {
-            this.complaintInput.setFocus();
-          }
-        }, 100);
-      },
-      error: (error) => {
-        console.error('Error updating complaint:', error);
-        this.addMessage('Sorry, there was an error updating your complaint. Please try again.', false);
+    // Just hide the accept/reject buttons and keep the text in the input
+    this.isSubmitted = false;
+    
+    // Focus the input field after a short delay
+    setTimeout(() => {
+      if (this.complaintInput) {
+        this.complaintInput.setFocus();
       }
-    });
+    }, 100);
   }
   
   private addMessage(text: string, isUser: boolean) {

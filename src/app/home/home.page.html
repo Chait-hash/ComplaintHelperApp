@@ -44,12 +44,15 @@
               </div>
             </ng-container>
             
-            <!-- Loading indicator for subsequent requests -->
-            <div *ngIf="isPulsing && !isInitialComplaint" class="message assistant">
-              <div class="message-content typing-indicator">
-                <span></span>
-                <span></span>
-                <span></span>
+            <!-- Loading indicator -->
+            <div *ngIf="isPulsing" class="message assistant">
+              <div class="message-content">
+                {{ isInitialComplaint ? 'Generating your complaint...' : '' }}
+                <div *ngIf="!isInitialComplaint" class="typing-indicator">
+                  <span></span>
+                  <span></span>
+                  <span></span>
+                </div>
               </div>
             </div>
           </div>
@@ -70,7 +73,7 @@
                 [readonly]="isSubmitted"
                 (ionFocus)="onTextareaFocus()"
                 (ionBlur)="onTextareaBlur()"
-                (keydown.enter)="!isSubmitted && isSubmitEnabled && submitComplaint()"
+                (keydown.enter)="$event.preventDefault()"
               ></ion-textarea>
               <div class="character-counter" [class.hidden]="!complaintText">{{ complaintText.length }}</div>
             </div>

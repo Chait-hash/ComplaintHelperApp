@@ -116,6 +116,16 @@ ion-content {
       color: var(--text-primary);
       border-top-left-radius: 0;
       max-width: 85%;
+      
+      /* Loading message styles */
+      &.loading-message {
+        color: #9ca3af;
+        font-style: italic;
+        
+        .typing-indicator {
+          margin-top: 8px;
+        }
+      }
     }
   }
 }
@@ -124,12 +134,12 @@ ion-content {
 .typing-indicator {
   display: flex;
   align-items: center;
-  padding: 8px 16px;
+  padding: 8px 0;
   
   span {
-    width: 8px;
-    height: 8px;
-    margin: 0 2px;
+    width: 6px;
+    height: 6px;
+    margin: 0 1px;
     background-color: #9ca3af;
     border-radius: 50%;
     display: inline-block;
@@ -140,14 +150,7 @@ ion-content {
   }
 }
 
-/* Generating complaint message */
-.generating-message {
-  color: #9ca3af;
-  font-style: italic;
-  padding: 8px 16px;
-  display: inline-block;
-  animation: fadeIn 0.3s ease-out;
-}
+/* Loading message styles are now nested under .assistant */
 
 /* Chat input container */
 .chat-input-container {
