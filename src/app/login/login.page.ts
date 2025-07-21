@@ -178,6 +178,15 @@ export class LoginPage {
     } catch (error) {
       console.error("Error handling login success:", error);
       throw error;
+    } finally {
+      // Always dismiss the loading controller
+      if (loading) {
+        try {
+          await loading.dismiss();
+        } catch (e) {
+          console.error('Error dismissing loading:', e);
+        }
+      }
     }
   }
 

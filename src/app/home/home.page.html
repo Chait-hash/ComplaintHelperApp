@@ -25,71 +25,83 @@
 
     <!-- Main Content -->
     <ion-router-outlet id="main-content">
-      <ion-header>
-        <ion-toolbar color="primary">
-          <ion-buttons slot="start">
-            <ion-menu-button></ion-menu-button>
-          </ion-buttons>
-          <ion-title>Home</ion-title>
-        </ion-toolbar>
-      </ion-header>
       
-      <ion-content [fullscreen]="true" class="ion-padding">
-        <div class="container">
-          <div class="input-container">
+      <ion-content [fullscreen]="true" class="ion-padding chat-container" [class.chat-active]="hasMessages">
+        <!-- Chat messages container -->
+        <div class="messages-container">
+          <!-- Initial prompt -->
+          <div class="initial-prompt" [class.hidden]="hasMessages">
             <h1 class="prompt-text">What's your complaint?</h1>
-            
-            <div class="input-wrapper">
-              <div class="textarea-container">
-                <ion-textarea 
-                  #complaintInput
-                  [(ngModel)]="complaintText"
-                  (ionInput)="onInputChange()"
-                  [autoGrow]="true"
-                  placeholder="Type your complaint here..."
-                  class="complaint-input"
-                  rows="4"
-                  [readonly]="isSubmitted"
-                  (ionFocus)="onTextareaFocus()"
-                  (ionBlur)="onTextareaBlur()"
-                ></ion-textarea>
-                <div class="character-counter">{{ complaintText.length }}</div>
+          </div>
+          
+          <!-- Chat messages -->
+          <div class="chat-messages">
+            <ng-container *ngFor="let message of messages">
+              <div class="message" [class.user]="message.isUser" [class.assistant]="!message.isUser">
+                <div class="message-content">
+                  {{ message.text }}
+                </div>
               </div>
-              
-              <!-- Submit Button (shown by default) -->
-              <ion-button 
-                *ngIf="!isSubmitted"
-                (click)="submitComplaint()" 
-                [disabled]="!isSubmitEnabled" 
-                fill="clear"
-                class="submit-button"
-                [class.disabled]="!isSubmitEnabled">
-                <ion-icon name="arrow-forward"></ion-icon>
-              </ion-button>
-              
-              <!-- Action Buttons (shown after submission) -->
-              <div *ngIf="isSubmitted" class="action-buttons">
-                <ion-button 
-                  (click)="onAccept()" 
-                  fill="solid"
-                  class="accept-button">
-                  <ion-icon name="checkmark-circle"></ion-icon>
-                  <span>Accept</span>
-                </ion-button>
-                <ion-button 
-                  (click)="onContinueEditing()" 
-                  fill="solid"
-                  class="continue-button">
-                  <ion-icon name="close-circle"></ion-icon>
-                  <span>Continue</span>
-                </ion-button>
+            </ng-container>
+            
+            <!-- Loading indicator for subsequent requests -->
+            <div *ngIf="isPulsing && !isInitialComplaint" class="message assistant">
+              <div class="message-content typing-indicator">
+                <span></span>
+                <span></span>
+                <span></span>
               </div>
             </div>
+          </div>
+        </div>
+        
+        <!-- Input area (fixed at bottom) -->
+        <div class="chat-input-container" [class.active]="hasMessages">
+          <div class="input-wrapper">
+            <div class="textarea-container">
+              <ion-textarea 
+                #complaintInput
+                [(ngModel)]="complaintText"
+                (ionInput)="onInputChange()"
+                [autoGrow]="true"
+                placeholder="Type your complaint here..."
+                class="complaint-input"
+                [rows]="hasMessages ? 1 : 4"
+                [readonly]="isSubmitted"
+                (ionFocus)="onTextareaFocus()"
+                (ionBlur)="onTextareaBlur()"
+                (keydown.enter)="!isSubmitted && isSubmitEnabled && submitComplaint()"
+              ></ion-textarea>
+              <div class="character-counter" [class.hidden]="!complaintText">{{ complaintText.length }}</div>
+            </div>
             
-            <!-- Submission status -->
-            <div *ngIf="isPulsing" class="submission-status">
-              <ion-spinner name="crescent"></ion-spinner>
-              <span>Processing your complaint...</span>
+            <!-- Submit Button (shown by default) -->
+            <ion-button 
+              *ngIf="!isSubmitted"
+              (click)="submitComplaint()" 
+              [disabled]="!isSubmitEnabled" 
+              fill="clear"
+              class="submit-button"
+              [class.disabled]="!isSubmitEnabled">
+              <ion-icon name="send"></ion-icon>
+            </ion-button>
+            
+            <!-- Action Buttons (shown after submission) -->
+            <div *ngIf="isSubmitted" class="action-buttons">
+              <ion-button 
+                (click)="onAccept()" 
+                fill="solid"
+                class="accept-button">
+                <ion-icon name="checkmark-circle"></ion-icon>
+                <span>Accept</span>
+              </ion-button>
+              <ion-button 
+                (click)="onContinueEditing()" 
+                fill="solid"
+                class="continue-button">
+                <ion-icon name="close-circle"></ion-icon>
+                <span>Edit</span>
+              </ion-button>
             </div>
           </div>
         </div>
